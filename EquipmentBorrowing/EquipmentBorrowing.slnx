@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="EquipmentBorrowing.Application/EquipmentBorrowing.Application.csproj" Id="30aea1d6-2609-4d53-bf96-83de9f1b2366" />
+  <Project Path="EquipmentBorrowing.ConsoleApp/EquipmentBorrowing.ConsoleApp.csproj" />
+  <Project Path="EquipmentBorrowing.Domain/EquipmentBorrowing.Domain.csproj" />
+  <Project Path="EquipmentBorrowing.Infrastructure/EquipmentBorrowing.Infrastructure.csproj" />
+  <Project Path="EquipmentBorrowing.Tests/EquipmentBorrowing.Tests.csproj" />
+  <Project Path="EquipmentBorrowing.Desktop/EquipmentBorrowing.Desktop.csproj" />
+</Solution>

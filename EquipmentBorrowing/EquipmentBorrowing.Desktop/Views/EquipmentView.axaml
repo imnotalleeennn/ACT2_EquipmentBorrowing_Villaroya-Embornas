@@ -1,0 +1,133 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:EquipmentBorrowing.Desktop.ViewModels"
+             xmlns:domain="using:EquipmentBorrowing.Domain"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+             x:Class="EquipmentBorrowing.Desktop.Views.EquipmentView"
+             x:DataType="vm:EquipmentViewModel">
+
+    <Grid RowDefinitions="Auto,*" Margin="20">
+        <!-- Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,15">
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Equipment Catalog" FontSize="24" FontWeight="Bold" Foreground="#1E293B" />
+                <TextBlock Text="Browse available laboratory equipment and submit borrowing requests." FontSize="13" Foreground="#64748B" Margin="0,4,0,0" />
+            </StackPanel>
+            <Button Grid.Column="1" Content="🔄 Refresh" Command="{Binding LoadDataCommand}"
+                    Background="#F1F5F9" Foreground="#334155" Padding="12,8" CornerRadius="6" VerticalAlignment="Center" />
+        </Grid>
+
+        <!-- Main Content (2 Columns: Catalog on Left, Borrow Form on Right) -->
+        <Grid Grid.Row="1" ColumnDefinitions="3*,2*" Margin="0,5,0,0">
+
+            <!-- LEFT: Equipment Catalog List -->
+            <Border Grid.Column="0" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,12,0">
+                <Grid RowDefinitions="Auto,*">
+                    <TextBlock Grid.Row="0" Text="Laboratory Equipment Items" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,12" Foreground="#334155"/>
+
+                    <ListBox Grid.Row="1" ItemsSource="{Binding EquipmentList}" SelectedItem="{Binding SelectedEquipment}"
+                             Background="Transparent" BorderThickness="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="domain:Equipment">
+                                <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <!-- ID Badge -->
+                                        <Border Grid.Column="0" Background="#E0E7FF" CornerRadius="4" Padding="8,4" VerticalAlignment="Center" Margin="0,0,12,0">
+                                            <TextBlock Text="{Binding Id, StringFormat='#{0}'}" FontWeight="Bold" Foreground="#3730A3" FontSize="12" />
+                                        </Border>
+
+                                        <!-- Equipment Info -->
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" Foreground="#1E293B" />
+                                            <TextBlock Text="Campus Laboratory Resource" FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" />
+                                        </StackPanel>
+
+                                        <!-- Availability Badge -->
+                                        <Border Grid.Column="2" CornerRadius="12" Padding="10,4" VerticalAlignment="Center">
+                                            <Border.Styles>
+                                                <Style Selector="Border">
+                                                    <Setter Property="Background" Value="#DCFCE7" />
+                                                </Style>
+                                            </Border.Styles>
+                                            <TextBlock Text="{Binding IsAvailable, Converter={x:Null}, StringFormat='Available: {0}'}"
+                                                       FontSize="11" FontWeight="SemiBold" Foreground="#166534" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+
+            <!-- RIGHT: Borrow Action Form -->
+            <Border Grid.Column="1" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="18" Margin="12,0,0,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="14">
+                        <TextBlock Text="Borrow Equipment" FontWeight="Bold" FontSize="18" Foreground="#0F172A" />
+                        <TextBlock Text="Select a student and choose return date for the selected item." FontSize="12" Foreground="#64748B" TextWrapping="Wrap" />
+
+                        <Separator Background="#E2E8F0" Height="1" Margin="0,4" />
+
+                        <!-- Selected Equipment Display -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Selected Equipment:" FontWeight="SemiBold" FontSize="12" Foreground="#475569" />
+                            <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="10">
+                                <TextBlock Text="{Binding SelectedEquipment.Name, FallbackValue='(No equipment selected - click an item on the left)'}"
+                                           FontWeight="{Binding SelectedEquipment, Converter={x:Null}}" Foreground="#1E293B" FontSize="13" />
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Student Dropdown -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Borrowing Student:" FontWeight="SemiBold" FontSize="12" Foreground="#475569" />
+                            <ComboBox ItemsSource="{Binding StudentsList}" SelectedItem="{Binding SelectedStudent}"
+                                      HorizontalAlignment="Stretch" PlaceholderText="Select a registered student...">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="domain:Student">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock Text="{Binding Name}" FontWeight="Medium" />
+                                            <TextBlock Text="{Binding MaxBorrowLimit, StringFormat='(Limit: {0})'}" Foreground="#64748B" FontSize="11" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding IsEligibleToBorrow, StringFormat='[Eligible: {0}]'}" Foreground="#64748B" FontSize="11" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- Expected Return Date Picker -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Expected Return Date:" FontWeight="SemiBold" FontSize="12" Foreground="#475569" />
+                            <CalendarDatePicker SelectedDate="{Binding ExpectedReturnDate}" HorizontalAlignment="Stretch" />
+                        </StackPanel>
+
+                        <!-- Action Button -->
+                        <Button Content="✓ Confirm &amp; Borrow Equipment" Command="{Binding BorrowCommand}"
+                                Background="#2563EB" Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="14"
+                                Padding="14,12" CornerRadius="6" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,10,0,0" />
+
+                        <!-- Status / Feedback Banner -->
+                        <Border IsVisible="{Binding HasStatus}" CornerRadius="6" Padding="12" Margin="0,8,0,0">
+                            <Border.Styles>
+                                <Style Selector="Border">
+                                    <Setter Property="Background" Value="#F8FAFC" />
+                                    <Setter Property="BorderBrush" Value="#CBD5E1" />
+                                    <Setter Property="BorderThickness" Value="1" />
+                                </Style>
+                            </Border.Styles>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0" Text="{Binding StatusMessage}" TextWrapping="Wrap" FontSize="12" FontWeight="Medium"
+                                           Foreground="#0F172A" VerticalAlignment="Center" />
+                                <Button Grid.Column="1" Content="✕" Command="{Binding ClearStatusCommand}"
+                                        Background="Transparent" Foreground="#64748B" Padding="6,2" Margin="6,0,0,0" VerticalAlignment="Top" />
+                            </Grid>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
